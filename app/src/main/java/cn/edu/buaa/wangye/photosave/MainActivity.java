@@ -104,6 +104,8 @@ public class MainActivity extends Activity {
                 handleSendText(intent); // Handle text being sent
             } else if (type.startsWith("image/")) {
                 handleSendImage(intent); // Handle single image being sent
+            } else if (type.startsWith("application/")) {
+                handleSendApplication(intent); // Handle single image being sent
             }
         } else if (Intent.ACTION_ATTACH_DATA.equals(action) && type != null) {
             if (type.startsWith("image/")) {
@@ -128,6 +130,15 @@ public class MainActivity extends Activity {
 
     }
 
+    private void handleSendApplication(Intent intent){
+        Uri imageUri = (Uri) getIntent().getExtras().get(Intent.EXTRA_STREAM);
+        System.out.println(imageUri.toString());
+        ArrayList<Uri> imageUris = new ArrayList<>();
+        imageUris.add(imageUri);
+        downloadPicWithUri(imageUris);
+
+    }
+
     public void downloadPicWithUri(final ArrayList<Uri> imageUris) {
         if (imageUris != null){
             new Thread(new Runnable() {
@@ -141,6 +152,7 @@ public class MainActivity extends Activity {
                         Uri imageUri = imageUris.get(i);
                         curPic = i+1;
                         filename = md5(imageUri.toString());
+                        System.out.println(imageUri.toString());
                         try {
                             InputStream is = cr.openInputStream(imageUri);
                             byte[] isbyte = convertInputStreamToByteArray(is);
