@@ -1,5 +1,30 @@
 package cn.edu.buaa.wangye.photosave;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Movie;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.ShareActionProvider;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -7,47 +32,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import cn.edu.buaa.wangye.photosave.R;
-
-
-
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.provider.MediaStore;
-import android.provider.MediaStore.Images;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Movie;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
-import android.widget.ImageView;
-import android.widget.ShareActionProvider;
-import android.widget.TextView;
-import android.widget.Toast;
+import java.util.Date;
 
 @SuppressLint("NewApi")
 public class MainActivity extends Activity {
@@ -151,7 +141,8 @@ public class MainActivity extends Activity {
                     for (int i = 0; i < totalPics; i++){
                         Uri imageUri = imageUris.get(i);
                         curPic = i+1;
-                        filename = md5(imageUri.toString());
+                        //filename = md5(imageUri.toString());
+                        filename = genFileName();
                         System.out.println(imageUri.toString());
                         try {
                             InputStream is = cr.openInputStream(imageUri);
@@ -225,8 +216,8 @@ public class MainActivity extends Activity {
                     // TODO Auto-generated method stub
                     try {
                         String gag = sharedText.substring(sharedText.indexOf("http://"));
-                        filename = md5(gag);
-
+                        //filename = md5(gag);
+                        filename = genFileName();
                         String pic = "";
 
                         Document doc = Jsoup.connect(gag).get();
@@ -388,5 +379,12 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public String genFileName(){
+        Date date = new Date();
+        String filename = "PhotoPlusSave_"+(new java.text.SimpleDateFormat(
+                "yyyy-MM-dd-hh-mm-ss_")).format(date)+date.getTime();
+        return filename;
     }
 }
